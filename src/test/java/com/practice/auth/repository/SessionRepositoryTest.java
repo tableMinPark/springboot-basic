@@ -65,4 +65,26 @@ class SessionRepositoryTest {
         assertEquals(ACCESS_TOKEN, session.getAccessToken());
         assertEquals(REFRESH_TOKEN, session.getRefreshToken());
     }
+
+    @DisplayName("Session 수정 테스트")
+    @Test
+    @Transactional
+    void sessionModifyTest() {
+        // when
+        Optional<Session> op = sessionRepository.findById(MEMBER_ID);
+        assertTrue(op.isPresent());
+
+        String modifyAccessToken = "modify_accessToken_sample";
+        String modifyRefreshToken = "modify_refreshToken_sample";
+        Session session = op.get();
+        session.setAccessToken(modifyAccessToken);
+        session.setRefreshToken(modifyRefreshToken);
+        sessionRepository.save(session);
+
+        // then
+        op = sessionRepository.findById(MEMBER_ID);
+        session = op.get();
+        assertEquals(modifyAccessToken, session.getAccessToken());
+        assertEquals(modifyRefreshToken, session.getRefreshToken());
+    }
 }
