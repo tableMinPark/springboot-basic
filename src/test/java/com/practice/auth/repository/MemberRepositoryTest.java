@@ -5,14 +5,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
@@ -47,5 +49,24 @@ class MemberRepositoryTest {
         Member member = op.get();
         assertEquals(member.getEmail(), EMAIL);
         assertEquals(member.getPassword(), PASSWORD);
+    }
+
+    @DisplayName("Member 수정 테스트")
+    @Test
+    @Transactional
+    void memberModifyTest() {
+        Optional<Member> op = memberRepository.findByEmail(EMAIL);
+        assertTrue(op.isPresent());
+
+        String modifyEmail = "modify@test.com";
+        String modifyPassword = "5678";
+
+        Member member = op.get();
+        member.setEmail(modifyEmail);
+        member.setPassword(modifyPassword);
+        memberRepository.flush();
+
+        op = memberRepository.findByEmail(modifyEmail);
+        assertTrue(op.isPresent());
     }
 }
