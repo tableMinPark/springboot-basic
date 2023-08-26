@@ -32,4 +32,17 @@ class RegisterMemberTest {
             authService.registerMember(email, password);
         });
     }
+
+    @DisplayName("비밀번호 유효성 단위 테스트")
+    @Test
+    void 비밀번호_유효성_단위_테스트() {
+        // given
+        String email = "test@test.com";
+        String password = "1234";
+
+        // when & then
+        assertThrows(FailException.class, () -> {
+            authService.registerMember(email, password);
+        });
+    }
 }
