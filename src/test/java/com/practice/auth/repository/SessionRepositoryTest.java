@@ -53,4 +53,16 @@ class SessionRepositoryTest {
     void sessionRegisterTest() {
         assertTrue(true);
     }
+
+    @DisplayName("Session 조회 테스트")
+    @Test
+    @Transactional
+    void sessionFindTest() {
+        Optional<Session> op = sessionRepository.findById(MEMBER_ID);
+        assertTrue(op.isPresent());
+
+        Session session = op.get();
+        assertEquals(ACCESS_TOKEN, session.getAccessToken());
+        assertEquals(REFRESH_TOKEN, session.getRefreshToken());
+    }
 }
