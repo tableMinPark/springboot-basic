@@ -74,4 +74,13 @@ class MemberRepositoryTest {
         op = memberRepository.findById(MEMBER_ID);
         assertTrue(op.isPresent());
     }
+
+    @DisplayName("Member 삭제 테스트")
+    @Test
+    void memberDeleteTest() {
+        memberRepository.deleteById(MEMBER_ID);
+
+        Optional<Member> op = memberRepository.findById(MEMBER_ID);
+        assertFalse(op.isPresent());
+    }
 }
