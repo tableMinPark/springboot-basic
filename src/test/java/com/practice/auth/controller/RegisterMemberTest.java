@@ -20,6 +20,17 @@ class RegisterMemberTest {
     @Autowired
     private AuthService authService;
 
+    @DisplayName("회원 가입 단위 테스트")
+    @Test
+    void 회원_가입_단위_테스트() {
+        // given
+        String email = "test@test.com";
+        String password = "12345678";
+
+        // when & then
+        authService.registerMember(email, password);
+    }
+
     @DisplayName("이메일 유효성 단위 테스트")
     @Test
     void 이메일_유효성_단위_테스트() {
