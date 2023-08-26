@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import javax.persistence.EntityManager;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.yml")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MemberRepositoryTest {
@@ -28,7 +30,7 @@ class MemberRepositoryTest {
 
     @BeforeEach
     void registerMember() {
-        this.entityManager.createNativeQuery("ALTER TABLE MEMBER ALTER member_id RESTART WITH 1").executeUpdate();
+        this.entityManager.createNativeQuery("ALTER TABLE member ALTER member_id RESTART WITH 1").executeUpdate();
         Member member = Member.builder()
                 .email(EMAIL)
                 .password(PASSWORD)
@@ -71,6 +73,9 @@ class MemberRepositoryTest {
 
         op = memberRepository.findById(MEMBER_ID);
         assertTrue(op.isPresent());
+        member = op.get();
+        assertEquals(modifyEmail, member.getEmail());
+        assertEquals(modifyPassword, member.getPassword());
     }
 
     @DisplayName("Member 삭제 테스트")

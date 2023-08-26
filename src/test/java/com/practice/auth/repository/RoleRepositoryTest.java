@@ -9,15 +9,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import javax.persistence.EntityManager;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
+@ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.yml")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class RoleRepositoryTest {
@@ -28,6 +31,7 @@ class RoleRepositoryTest {
     @Autowired
     private RoleRepository roleRepository;
     private final Long MEMBER_ID = 1L;
+    private final Long ROLE_ID = 1L;
     private final Integer ROLE_SIZE = 3;
 
     @BeforeEach
@@ -36,7 +40,7 @@ class RoleRepositoryTest {
         String password = "1234";
 
         // 회원 생성
-        this.entityManager.createNativeQuery("ALTER TABLE MEMBER ALTER member_id RESTART WITH 1").executeUpdate();
+        this.entityManager.createNativeQuery("ALTER TABLE member ALTER member_id RESTART WITH 1").executeUpdate();
         Member member = Member.builder()
                 .email(email)
                 .password(password)
@@ -45,7 +49,7 @@ class RoleRepositoryTest {
         memberRepository.save(member);
 
         // 회원 역할 생성
-        this.entityManager.createNativeQuery("ALTER TABLE ROLE ALTER role_id RESTART WITH 1").executeUpdate();
+        this.entityManager.createNativeQuery("ALTER TABLE role ALTER role_id RESTART WITH 1").executeUpdate();
         for (int i = 0; i < ROLE_SIZE; i++) {
             roleRepository.save(Role.builder()
                     .memberId(member.getMemberId())
@@ -72,5 +76,23 @@ class RoleRepositoryTest {
             assertEquals(MEMBER_ID, role.getMemberId());
             assertEquals(RoleCode.NORMAL.code, role.getRole());
         }
+    }
+
+    @DisplayName("Role 수정 테스트")
+    @Test
+    void roleModifyTest() {
+        Optional<Role> op = roleRepository.findById(ROLE_ID);
+        assertTrue(op.isPresent());
+
+        RoleCode modifyRole = RoleCode.ADMIN;
+
+        Role role = op.get();
+        role.setRole(modifyRole.code);
+        roleRepository.flush();
+
+        op = roleRepository.findById(ROLE_ID);
+        assertTrue(op.isPresent());
+        role = op.get();
+        assertEquals(modifyRole.code, role.getRole());
     }
 }
