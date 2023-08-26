@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Role {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "role_id")
+    private Long roleId;
     @Column(name = "member_id")
     private Long memberId;
     @Column(name = "role")
