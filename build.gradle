@@ -37,6 +37,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	// h2
 	testImplementation 'com.h2database:h2'
+	// gson
+	testImplementation 'com.google.code.gson:gson:2.8.9'
+
 }
 
 tasks.named('test') {
