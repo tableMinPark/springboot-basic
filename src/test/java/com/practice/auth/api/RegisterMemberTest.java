@@ -81,4 +81,30 @@ class RegisterMemberTest {
                 .andExpect(jsonPath("$.data.title", is(failCode.title)))
                 .andExpect(jsonPath("$.data.content", is(failCode.content)));
     }
+
+    @DisplayName("비밀번호 미입력 단위 테스트")
+    @Test
+    void 비밀번호_미입력_단위_테스트() throws Exception {
+        // given
+        String email = "test@test.com";
+
+        RegisterMemberReqDto request = RegisterMemberReqDto.builder()
+                .email(email)
+                .build();
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post("/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(request)));
+
+        // then
+        FailCode failCode = FailCode.INVALID_ARGS;
+
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status", is("fail")))
+                .andExpect(jsonPath("$.data.title", is(failCode.title)))
+                .andExpect(jsonPath("$.data.content", is(failCode.content)));
+    }
 }
