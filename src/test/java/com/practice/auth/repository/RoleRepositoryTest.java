@@ -95,4 +95,13 @@ class RoleRepositoryTest {
         role = op.get();
         assertEquals(modifyRole.code, role.getRole());
     }
+
+    @DisplayName("Role 삭제 테스트")
+    @Test
+    void roleDeleteTest() {
+        roleRepository.deleteById(ROLE_ID);
+
+        Optional<Role> op = roleRepository.findById(ROLE_ID);
+        assertFalse(op.isPresent());
+    }
 }
