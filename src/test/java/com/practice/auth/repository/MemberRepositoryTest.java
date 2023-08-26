@@ -27,16 +27,14 @@ class MemberRepositoryTest {
     private final Long MEMBER_ID = 1L;
 
     @BeforeEach
-    void register() {
-        this.entityManager.createNativeQuery("ALTER TABLE MEMBER AUTO_INCREMENT = 1") .executeUpdate();
+    void registerMember() {
+        this.entityManager.createNativeQuery("ALTER TABLE MEMBER AUTO_INCREMENT = 1").executeUpdate();
         Member member = Member.builder()
                 .email(EMAIL)
                 .password(PASSWORD)
                 .build();
 
         memberRepository.save(member);
-
-        System.out.println(member.getMemberId());
     }
 
     @DisplayName("Member 생성 테스트")
