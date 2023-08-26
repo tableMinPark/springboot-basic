@@ -82,4 +82,14 @@ class ExpiredTokenRepositoryTest {
         assertEquals(TOKEN, expiredToken.getToken());
         assertEquals(modifyMemberId, expiredToken.getMemberId());
     }
+
+    @DisplayName("ExpiredToken 삭제 테스트")
+    @Test
+    @Transactional
+    void expiredTokenDeleteTest() {
+        expiredTokenRepository.deleteById(TOKEN);
+
+        Optional<ExpiredToken> op = expiredTokenRepository.findById(TOKEN);
+        assertFalse(op.isPresent());
+    }
 }
