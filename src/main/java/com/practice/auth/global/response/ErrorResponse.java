@@ -6,11 +6,11 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class ErrorBasicResponse extends BasicResponse {
+public class ErrorResponse extends BasicResponse {
     private final String message;
     private final Integer code;
 
-    public ErrorBasicResponse(ErrorCode errorCode) {
+    public ErrorResponse(ErrorCode errorCode) {
         super("error");
         this.message = errorCode.message;
         this.code = errorCode.code;

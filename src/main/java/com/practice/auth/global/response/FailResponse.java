@@ -5,10 +5,10 @@ import lombok.*;
 
 @Getter
 @ToString
-public class FailBasicResponse extends BasicResponse {
+public class FailResponse extends BasicResponse {
     private final FailData data;
 
-    public FailBasicResponse(FailCode failCode) {
+    public FailResponse(FailCode failCode) {
         super("fail");
         this.data = FailData.builder()
                 .title(failCode.title)

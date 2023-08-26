@@ -5,9 +5,9 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class SuccessBasicResponse extends BasicResponse {
+public class SuccessResponse extends BasicResponse {
     private final Object data;
-    public SuccessBasicResponse(Object data) {
+    public SuccessResponse(Object data) {
         super("success");
         this.data = data;
     }
