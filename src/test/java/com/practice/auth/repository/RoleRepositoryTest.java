@@ -1,6 +1,6 @@
 package com.practice.auth.repository;
 
-import com.practice.auth.code.RoleCode;
+import com.practice.auth.global.code.RoleCode;
 import com.practice.auth.entity.Member;
 import com.practice.auth.entity.Role;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package com.practice.auth.code;
+package com.practice.auth.global.code;
 
 import lombok.AllArgsConstructor;
 
