@@ -17,9 +17,8 @@ public class FailResponse extends BasicResponse {
     }
 
     @Builder
-    @AllArgsConstructor
     private static class FailData {
-        private String title;
-        private String content;
+        public String title;
+        public String content;
     }
 }
