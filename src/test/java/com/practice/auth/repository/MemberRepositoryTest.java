@@ -28,7 +28,7 @@ class MemberRepositoryTest {
 
     @BeforeEach
     void registerMember() {
-        this.entityManager.createNativeQuery("ALTER TABLE MEMBER AUTO_INCREMENT = 1").executeUpdate();
+        this.entityManager.createNativeQuery("ALTER TABLE MEMBER ALTER member_id RESTART WITH 1").executeUpdate();
         Member member = Member.builder()
                 .email(EMAIL)
                 .password(PASSWORD)

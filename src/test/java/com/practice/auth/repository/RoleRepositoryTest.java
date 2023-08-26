@@ -13,6 +13,8 @@ import org.springframework.test.context.TestPropertySource;
 
 import javax.persistence.EntityManager;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -26,6 +28,7 @@ class RoleRepositoryTest {
     @Autowired
     private RoleRepository roleRepository;
     private final Long MEMBER_ID = 1L;
+    private final Integer ROLE_SIZE = 3;
 
     @BeforeEach
     void registerRole() {
@@ -33,7 +36,7 @@ class RoleRepositoryTest {
         String password = "1234";
 
         // 회원 생성
-        this.entityManager.createNativeQuery("ALTER TABLE MEMBER AUTO_INCREMENT = 1").executeUpdate();
+        this.entityManager.createNativeQuery("ALTER TABLE MEMBER ALTER member_id RESTART WITH 1").executeUpdate();
         Member member = Member.builder()
                 .email(email)
                 .password(password)
@@ -41,17 +44,33 @@ class RoleRepositoryTest {
 
         memberRepository.save(member);
 
-        Role role = Role.builder()
-                .memberId(member.getMemberId())
-                .role(RoleCode.NORMAL.code)
-                .build();
-
-        roleRepository.save(role);
+        // 회원 역할 생성
+        this.entityManager.createNativeQuery("ALTER TABLE ROLE ALTER role_id RESTART WITH 1").executeUpdate();
+        for (int i = 0; i < ROLE_SIZE; i++) {
+            roleRepository.save(Role.builder()
+                    .memberId(member.getMemberId())
+                    .role(RoleCode.NORMAL.code)
+                    .build());
+        }
     }
 
     @DisplayName("Role 생성 테스트")
     @Test
     void roleRegisterTest() {
         assertTrue(true);
+    }
+
+    @DisplayName("Role 조회 테스트")
+    @Test
+    void roleFindTest() {
+        List<Role> op = roleRepository.findAll();
+        assertEquals(ROLE_SIZE, op.size());
+
+        for (int i = 0; i < ROLE_SIZE; i++) {
+            Role role = op.get(i);
+            assertEquals(i + 1, role.getRoleId());
+            assertEquals(MEMBER_ID, role.getMemberId());
+            assertEquals(RoleCode.NORMAL.code, role.getRole());
+        }
     }
 }
