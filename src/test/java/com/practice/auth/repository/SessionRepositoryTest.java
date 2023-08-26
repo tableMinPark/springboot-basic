@@ -87,4 +87,14 @@ class SessionRepositoryTest {
         assertEquals(modifyAccessToken, session.getAccessToken());
         assertEquals(modifyRefreshToken, session.getRefreshToken());
     }
+
+    @DisplayName("Session 삭제 테스트")
+    @Test
+    @Transactional
+    void sessionDeleteTest() {
+        sessionRepository.deleteById(MEMBER_ID);
+
+        Optional<Session> op = sessionRepository.findById(MEMBER_ID);
+        assertFalse(op.isPresent());
+    }
 }
