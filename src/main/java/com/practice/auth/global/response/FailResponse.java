@@ -1,6 +1,5 @@
 package com.practice.auth.global.response;
 
-import com.practice.auth.global.code.FailCode;
 import lombok.*;
 
 @Getter
@@ -8,11 +7,11 @@ import lombok.*;
 public class FailResponse extends BasicResponse {
     private final FailData data;
 
-    public FailResponse(FailCode failCode) {
+    public FailResponse(String title, String content) {
         super("fail");
         this.data = FailData.builder()
-                .title(failCode.title)
-                .content(failCode.content)
+                .title(title)
+                .content(content)
                 .build();
     }
 
