@@ -61,4 +61,25 @@ class ExpiredTokenRepositoryTest {
         assertEquals(TOKEN, expiredToken.getToken());
         assertEquals(MEMBER_ID, expiredToken.getMemberId());
     }
+
+    @DisplayName("ExpiredToken 수정 테스트")
+    @Test
+    @Transactional
+    void expiredTokenModifyTest() {
+        // when
+        Optional<ExpiredToken> op = expiredTokenRepository.findById(TOKEN);
+        assertTrue(op.isPresent());
+
+        Long modifyMemberId = 0L;
+
+        ExpiredToken expiredToken = op.get();
+        expiredToken.setMemberId(modifyMemberId);
+        expiredTokenRepository.save(expiredToken);
+
+        // then
+        op = expiredTokenRepository.findById(TOKEN);
+        expiredToken = op.get();
+        assertEquals(TOKEN, expiredToken.getToken());
+        assertEquals(modifyMemberId, expiredToken.getMemberId());
+    }
 }
