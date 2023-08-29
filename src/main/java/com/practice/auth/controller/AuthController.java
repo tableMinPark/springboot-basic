@@ -1,5 +1,6 @@
 package com.practice.auth.controller;
 
+import com.practice.auth.dto.request.LoginReqDto;
 import com.practice.auth.dto.request.RegisterMemberReqDto;
 import com.practice.auth.global.code.FailCode;
 import com.practice.auth.global.exception.FailException;
@@ -30,6 +31,24 @@ public class AuthController {
         }
 
         authService.registerMember(email, password);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new SuccessResponse(null));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Object> login(@RequestBody LoginReqDto loginReqDto) throws RuntimeException {
+        log.info("login - Call");
+
+        String email = loginReqDto.getEmail();
+        String password = loginReqDto.getPassword();
+
+        if (email == null || password == null) {
+            throw new FailException(FailCode.INVALID_ARGS);
+        }
+
+        authService.login(email, password);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
