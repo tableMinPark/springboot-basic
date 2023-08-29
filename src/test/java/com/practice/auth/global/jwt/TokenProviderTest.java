@@ -1,5 +1,6 @@
 package com.practice.auth.global.jwt;
 
+import com.practice.auth.entity.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +28,12 @@ class TokenProviderTest {
 
     @BeforeEach
     void generateToken() {
-        TOKEN = tokenProvider.generateAccessToken(MEMBER_ID, ROLE);
+        List<Role> roleList = new ArrayList<>();
+        roleList.add(Role.builder()
+                .role(ROLE)
+                .build());
+
+        TOKEN = tokenProvider.generateAccessToken(MEMBER_ID, roleList);
     }
 
     @DisplayName("JWT 토큰 발급 테스트")
