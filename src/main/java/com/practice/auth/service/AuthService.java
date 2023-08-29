@@ -63,6 +63,14 @@ public class AuthService {
 
     @Transactional
     public LoginResDto login(String email, String password) throws RuntimeException {
+        /* 이메일, 비밀번호 유효성 검증 */
+        if (!emailValidation(email)) {
+            throw new FailException(FailCode.INVALID_EMAIL);
+        }
+        else if (!passwordValidation(password)) {
+            throw new FailException(FailCode.INVALID_PASSWORD);
+        }
+
         /* 회원 정보 유무 확인 */
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new FailException(FailCode.NOT_FOUND_MEMBER));
