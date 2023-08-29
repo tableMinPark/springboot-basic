@@ -30,3 +30,9 @@ spring:
   h2:
     console:
       enabled: true
+
+jwt:
+  secret: 999d95876cb0e556f8546fbee8356a3e919cf761b863c5efd39b1672cef5b6d0c7a40a29b176169aa1ab705f38fa1cf7979f9815fef6d32c2e30be9d980f5d41
+  expired:
+    access_token: 1000
+    refresh_token: 5000
