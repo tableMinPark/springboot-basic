@@ -1,6 +1,5 @@
 package com.practice.auth.repository;
 
-import com.practice.auth.entity.ExpiredToken;
 import com.practice.auth.entity.Session;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,6 +82,8 @@ class SessionRepositoryTest {
 
         // then
         op = sessionRepository.findById(MEMBER_ID);
+        assertTrue(op.isPresent());
+
         session = op.get();
         assertEquals(modifyAccessToken, session.getAccessToken());
         assertEquals(modifyRefreshToken, session.getRefreshToken());
