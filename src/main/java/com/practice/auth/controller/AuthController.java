@@ -2,6 +2,7 @@ package com.practice.auth.controller;
 
 import com.practice.auth.dto.request.LoginReqDto;
 import com.practice.auth.dto.request.RegisterMemberReqDto;
+import com.practice.auth.dto.response.LoginResDto;
 import com.practice.auth.global.code.FailCode;
 import com.practice.auth.global.exception.FailException;
 import com.practice.auth.global.response.SuccessResponse;
@@ -48,10 +49,10 @@ public class AuthController {
             throw new FailException(FailCode.INVALID_ARGS);
         }
 
-        authService.login(email, password);
+        LoginResDto loginResDto = authService.login(email, password);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new SuccessResponse(null));
+                .body(new SuccessResponse(loginResDto));
     }
 }
