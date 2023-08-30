@@ -1,5 +1,6 @@
 package com.practice.auth.service;
 
+import com.practice.auth.TestUtil;
 import com.practice.auth.entity.Member;
 import com.practice.auth.entity.Role;
 import com.practice.auth.global.code.RoleCode;
@@ -15,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class RegisterMemberTest {
     @Autowired
-    private EntityManager entityManager;
+    private TestUtil testUtil;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -39,30 +39,26 @@ class RegisterMemberTest {
     @Test
     @Transactional
     void 회원_가입_단위_테스트() {
-        // given
-        this.entityManager.createNativeQuery("ALTER TABLE member ALTER member_id RESTART WITH 1").executeUpdate();
-        Long memberId = 1L;
-        String email = "test@test.com";
-        String password = "12345678";
+        testUtil.reset();
 
         // when
         /* 회원 등록 가능 여부 검증 */
-        if (!emailValidation(email)) {
+        if (!emailValidation(testUtil.EMAIL)) {
             fail();
         }
-        else if (!passwordValidation(password)) {
+        else if (!passwordValidation(testUtil.PASSWORD)) {
             fail();
         }
-        else if (memberRepository.findByEmail(email).isPresent()) {
+        else if (memberRepository.findByEmail(testUtil.EMAIL).isPresent()) {
             fail();
         }
 
         /* 패스 워드 암호화 */
-        password = passwordEncoder.encode(password);
+        String password = passwordEncoder.encode(testUtil.PASSWORD);
 
         /* 회원 정보 저장 */
         Member member = Member.builder()
-                .email(email)
+                .email(testUtil.EMAIL)
                 .password(password)
                 .build();
         memberRepository.save(member);
@@ -75,15 +71,17 @@ class RegisterMemberTest {
         roleRepository.save(role);
 
         // then
-        Optional<Member> memberOptional = memberRepository.findById(memberId);
+        Optional<Member> memberOptional = memberRepository.findById(testUtil.MEMBER_ID);
         assertTrue(memberOptional.isPresent());
         member = memberOptional.get();
-        assertEquals(memberId, member.getMemberId());
-        assertEquals(email, member.getEmail());
+        assertEquals(testUtil.MEMBER_ID, member.getMemberId());
+        assertEquals(testUtil.EMAIL, member.getEmail());
         assertEquals(password, member.getPassword());
 
         List<Role> roleList = roleRepository.findByMemberId(member.getMemberId());
         assertEquals(1, roleList.size());
+
+        testUtil.deleteMember();
     }
 
     @DisplayName("비밀번호 암호화 단위 테스트")

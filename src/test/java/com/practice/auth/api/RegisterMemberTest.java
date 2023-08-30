@@ -1,6 +1,7 @@
 package com.practice.auth.api;
 
 import com.google.gson.Gson;
+import com.practice.auth.TestUtil;
 import com.practice.auth.dto.request.RegisterMemberReqDto;
 import com.practice.auth.global.code.FailCode;
 import org.junit.jupiter.api.DisplayName;
@@ -29,27 +30,23 @@ import static org.hamcrest.Matchers.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class RegisterMemberTest {
     @Autowired
+    private TestUtil testUtil;
+    @Autowired
     private MockMvc mockMvc;
 
     @DisplayName("회원 가입 단위 테스트")
     @Test
     void 회원_가입_단위_테스트() throws Exception {
-        // given
-        String email = "test@test.com";
-        String password = "12345678";
-
         RegisterMemberReqDto request = RegisterMemberReqDto.builder()
-                .email(email)
-                .password(password)
+                .email(testUtil.EMAIL)
+                .password(testUtil.PASSWORD)
                 .build();
 
-        // when
         ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(request)));
 
-        // then
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is("success")))
@@ -59,11 +56,8 @@ class RegisterMemberTest {
     @DisplayName("이메일 미입력 단위 테스트")
     @Test
     void 이메일_미입력_단위_테스트() throws Exception {
-        // given
-        String password = "12345678";
-
         RegisterMemberReqDto request = RegisterMemberReqDto.builder()
-                .password(password)
+                .password(testUtil.PASSWORD)
                 .build();
 
         // when
@@ -85,20 +79,15 @@ class RegisterMemberTest {
     @DisplayName("비밀번호 미입력 단위 테스트")
     @Test
     void 비밀번호_미입력_단위_테스트() throws Exception {
-        // given
-        String email = "test@test.com";
-
         RegisterMemberReqDto request = RegisterMemberReqDto.builder()
-                .email(email)
+                .email(testUtil.EMAIL)
                 .build();
 
-        // when
         ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(request)));
 
-        // then
         FailCode failCode = FailCode.INVALID_ARGS;
 
         resultActions
@@ -111,7 +100,6 @@ class RegisterMemberTest {
     @DisplayName("이메일 유효성 단위 테스트")
     @Test
     void 이메일_유효성_단위_테스트() throws Exception {
-        // given
         String email = "test test.com";
         String password = "12345678";
 
@@ -120,13 +108,11 @@ class RegisterMemberTest {
                 .password(password)
                 .build();
 
-        // when
         ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(request)));
 
-        // then
         FailCode failCode = FailCode.INVALID_EMAIL;
 
         resultActions
@@ -139,7 +125,6 @@ class RegisterMemberTest {
     @DisplayName("비밀번호 유효성 단위 테스트")
     @Test
     void 비밀번호_유효성_단위_테스트() throws Exception {
-        // given
         String email = "test@test.com";
         String password = "1234";
 
@@ -148,13 +133,11 @@ class RegisterMemberTest {
                 .password(password)
                 .build();
 
-        // when
         ResultActions resultActions = mockMvc.perform(
                 MockMvcRequestBuilders.post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(request)));
 
-        // then
         FailCode failCode = FailCode.INVALID_PASSWORD;
 
         resultActions

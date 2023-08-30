@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 
 import java.time.LocalDateTime;
 
@@ -18,4 +19,6 @@ public class Session {
     private String accessToken;
     private String refreshToken;
     private LocalDateTime loginDt;
+    @TimeToLive
+    private Long expire;
 }

@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
     List<Role> findByMemberId(Long memberId);
+    void deleteByMemberId(Long memberId);
 }

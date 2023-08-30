@@ -1,5 +1,7 @@
 package com.practice.auth.global.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.auth.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -12,6 +14,10 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +26,8 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class TokenProvider {
+    private final ObjectMapper objectMapper;
+
     @Value("${jwt.secret}")
     private String JWT_KEY;
 
@@ -29,15 +37,9 @@ public class TokenProvider {
     @Value("${jwt.expired.refresh_token}")
     private Long REFRESH_TOKEN_EXPIRED;
 
-    public String generateAccessToken(Long memberId, List<Role> roleList) {
-        String role = roleList.stream()
-                .map(Role::getRole)
-                .collect(Collectors.toList())
-                .toString();
-
+    public String generateAccessToken(Long memberId) {
         Claims claims = Jwts.claims();
         claims.put("memberId", memberId);
-        claims.put("role", role);
         return generateToken(claims, ACCESS_TOKEN_EXPIRED);
     }
 
@@ -47,12 +49,18 @@ public class TokenProvider {
         return generateToken(claims, REFRESH_TOKEN_EXPIRED);
     }
 
-    public Long getMemberId(String token) {
-        return extractAllClaims(token).get("memberId", Long.class);
+    public Long getExpiredSeconds(String token) {
+        LocalDateTime expiration = extractAllClaims(token).getExpiration().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        // Return Seconds
+        long expired = Duration.between(LocalDateTime.now(), expiration).getSeconds();
+
+        return Math.max(0, expired);
     }
 
-    public String getRole(String token) {
-        return extractAllClaims(token).get("role", String.class);
+    public Long getMemberId(String token) {
+        return extractAllClaims(token).get("memberId", Long.class);
     }
 
     private Claims extractAllClaims(String token) {
@@ -72,7 +80,7 @@ public class TokenProvider {
     private String generateToken(Claims claims, Long expired) {
         long now = System.currentTimeMillis();
         Date issuedAt = new Date(now);
-        Date expiration = new Date(now + expired);
+        Date expiration = new Date(now + expired * 1000);      // Millis Seconds
         Key signingKey = getSigningKey();
 
         return Jwts.builder()

@@ -1,5 +1,6 @@
 package com.practice.auth.global.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.practice.auth.entity.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,12 +29,7 @@ class TokenProviderTest {
 
     @BeforeEach
     void generateToken() {
-        List<Role> roleList = new ArrayList<>();
-        roleList.add(Role.builder()
-                .role(ROLE)
-                .build());
-
-        TOKEN = tokenProvider.generateAccessToken(MEMBER_ID, roleList);
+        TOKEN = tokenProvider.generateAccessToken(MEMBER_ID);
     }
 
     @DisplayName("JWT 토큰 발급 테스트")
@@ -46,8 +42,6 @@ class TokenProviderTest {
     @Test
     void extractPayloadTest() {
         Long memberId = tokenProvider.getMemberId(TOKEN);
-        String role = tokenProvider.getRole(TOKEN);
         assertEquals(MEMBER_ID, memberId);
-        assertEquals(ROLE, role);
     }
 }

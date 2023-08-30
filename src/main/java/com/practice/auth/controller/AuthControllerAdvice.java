@@ -41,6 +41,7 @@ public class AuthControllerAdvice {
         ErrorCode errorCode = ErrorCode.INTERNAL_SERVER;
 
         log.info("handleRuntimeException : {} - {} - {}", errorCode.message, errorCode.code, e.getMessage());
+        e.printStackTrace();
 
         return ResponseEntity
                 .status(errorCode.httpStatus)
