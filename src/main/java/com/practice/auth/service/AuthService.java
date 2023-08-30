@@ -1,6 +1,7 @@
 package com.practice.auth.service;
 
 import com.practice.auth.dto.response.LoginResDto;
+import com.practice.auth.entity.ExpiredToken;
 import com.practice.auth.entity.Member;
 import com.practice.auth.entity.Role;
 import com.practice.auth.entity.Session;
@@ -8,6 +9,7 @@ import com.practice.auth.global.code.FailCode;
 import com.practice.auth.global.code.RoleCode;
 import com.practice.auth.global.exception.FailException;
 import com.practice.auth.global.jwt.TokenProvider;
+import com.practice.auth.repository.ExpiredTokenRepository;
 import com.practice.auth.repository.MemberRepository;
 import com.practice.auth.repository.RoleRepository;
 import com.practice.auth.repository.SessionRepository;
@@ -27,6 +29,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final RoleRepository roleRepository;
     private final SessionRepository sessionRepository;
+    private final ExpiredTokenRepository expiredTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
@@ -85,16 +88,16 @@ public class AuthService {
         Session session = sessionRepository.findById(memberId)
                 .orElseGet(() -> {
                     /* 엑세스 토큰 발급 */
-                    List<Role> roleList = roleRepository.findByMemberId(memberId);
-
-                    String accessToken = tokenProvider.generateAccessToken(memberId, roleList);
+                    String accessToken = tokenProvider.generateAccessToken(memberId);
                     String refreshToken = tokenProvider.generateRefreshToken(memberId);
+                    Long expired = tokenProvider.getExpiredSeconds(refreshToken);
 
                     Session generateSession = Session.builder()
                             .memberId(memberId)
                             .accessToken(accessToken)
                             .refreshToken(refreshToken)
                             .loginDt(LocalDateTime.now())
+                            .expire(expired)
                             .build();
 
                     /* Redis(MemberToken) 등록 */
@@ -107,6 +110,19 @@ public class AuthService {
                 .accessToken(session.getAccessToken())
                 .refreshToken(session.getRefreshToken())
                 .build();
+    }
+
+    @Transactional
+    public void logout(Long memberId) {
+        Session session = sessionRepository.findById(memberId)
+                .orElseThrow(() -> new FailException(FailCode.NOT_FOUND_SESSION));
+
+        ExpiredToken expiredAccessToken = getExpiredToken(session.getAccessToken());
+        expiredTokenRepository.save(expiredAccessToken);
+        ExpiredToken expiredRefreshToken = getExpiredToken(session.getRefreshToken());
+        expiredTokenRepository.save(expiredRefreshToken);
+
+        sessionRepository.deleteById(memberId);
     }
 
 
@@ -128,5 +144,16 @@ public class AuthService {
         }
 
         return isOk;
+    }
+
+    private ExpiredToken getExpiredToken(String token) {
+        Long expired = tokenProvider.getExpiredSeconds(token);
+        Long memberId = tokenProvider.getMemberId(token);
+
+        return ExpiredToken.builder()
+                .token(token)
+                .memberId(memberId)
+                .expire(expired)
+                .build();
     }
 }
