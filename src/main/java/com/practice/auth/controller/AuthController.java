@@ -6,6 +6,7 @@ import com.practice.auth.dto.response.LoginResDto;
 import com.practice.auth.global.code.FailCode;
 import com.practice.auth.global.exception.FailException;
 import com.practice.auth.global.response.SuccessResponse;
+import com.practice.auth.global.security.CustomUserDetail;
 import com.practice.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,5 +55,21 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new SuccessResponse(loginResDto));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Object> logout() throws RuntimeException {
+        log.info("login - Call");
+
+        Long memberId = CustomUserDetail.getMemberId();
+
+        if (memberId == null) {
+            throw new FailException(FailCode.NOT_FOUND_SESSION);
+        }
+
+        authService.logout(memberId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new SuccessResponse(null));
     }
 }
